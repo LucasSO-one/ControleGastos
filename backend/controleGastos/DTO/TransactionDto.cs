@@ -1,9 +1,10 @@
+
 public record CreateTransactionDto(
-    string description,
-    decimal amount,
-    DateTime date,
+    string Description,
+    decimal Amount,
+    DateTime Date,
     int CategoryId,
-    TransactionType type // 0 - Expense, 1 - Income
+    TransactionType Type // 0 - Expense, 1 - Income
 );
 
 public record UpdateTransactionDto(

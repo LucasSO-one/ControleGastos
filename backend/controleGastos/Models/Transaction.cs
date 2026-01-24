@@ -19,6 +19,8 @@ public class Transaction
     [Column(TypeName = "jsonb")] // Recurso nativo do Postgres
     public string? AiAnalysisJson { get; set; }
 
+    public TransactionType Type { get; set; }
+
     // Chaves Estrangeiras
     public Guid UserId { get; set; }
     public User User { get; set; }
@@ -28,3 +30,5 @@ public class Transaction
 }
 
 public enum InputMethod { Manual, AiText, AiImage }
+
+public enum TransactionType { Expense = 0, Income = 1}
