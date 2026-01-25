@@ -1,0 +1,46 @@
+@import '../../index.scss';
+
+.header-container{
+    background: $gray-900; // Fundo escuro
+    padding: 2rem 0; // Espaçamento vertical
+}
+
+.header-content{
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1.5rem; // Margem lateral para telas menores
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .user-info {
+        font-size: 1.25rem;
+        color: $gray-100;
+        
+        span {
+        font-weight: 400;
+        color: $gray-300;
+        margin-right: 0.5rem;
+        }
+    }
+
+    .actions {
+        display: flex;
+        gap: 1rem;
+
+        button {
+        background: transparent;
+        border: 0;
+        color: $gray-300;
+        padding: 0; // Remove padding padrão do botão
+        width: auto; // Remove largura 100% padrão
+        transition: color 0.2s;
+
+        &:hover {
+            color: $green-500; // Fica verde ao passar o mouse
+        }
+        }
+    }
+}
