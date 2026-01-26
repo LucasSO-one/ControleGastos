@@ -10,6 +10,7 @@ export function AppRoutes() {
   return (
     
     <Routes>
+        {/* Rotas Públicas */}
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
 
@@ -17,8 +18,10 @@ export function AppRoutes() {
         <Route path="/" element={
             <PrivateRoute>
                 <Dashboard/>
+
             </PrivateRoute>
         } />
+        
     </Routes>
   )
 }

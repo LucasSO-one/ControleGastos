@@ -9,7 +9,7 @@ export default function Header() {
     const userName = localStorage.getItem("userName") || "Visitante";
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("accessToken");
         localStorage.removeItem("userName");
         navigate("/login");
     }

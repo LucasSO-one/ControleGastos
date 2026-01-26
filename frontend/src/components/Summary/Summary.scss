@@ -1,0 +1,52 @@
+@import "../../index.scss";
+
+.summary-container{
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+
+    margin-top: 1.5rem;
+}
+
+.summary-card{
+    background: $gray-800;
+    border-radius: 6px;
+    padding: 2rem;
+
+    header{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: $gray-300;
+    }
+
+    strong{
+        display: block;
+        margin-top: 1rem;
+        font-size: 2rem;
+    }
+
+    &.highlight-background{
+        background: $green-500;
+        color: #fff;
+    }
+
+    &.highlight-red {
+    background: $red-500; 
+    color: #FFF;
+  }
+}
+
+@media (max-width: 768px){
+    .summary-container{
+        grid-template-columns: 1fr; // no celular fica apenas uma coluna
+        gap: 1rem;
+        margin-top: 1rem;
+        overflow-x: auto;
+    }
+}

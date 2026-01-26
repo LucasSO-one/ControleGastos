@@ -1,0 +1,88 @@
+@import '../../index.scss';
+
+.transactions-container {
+  width: 100%;
+  max-width: 1120px;
+  margin: 4rem auto 0; // Margem no topo para separar dos cards
+  padding: 0 1.5rem;
+}
+
+.transactions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+
+    h2 {
+        font-size: 1.25rem;
+        color: $gray-100;
+    }
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: separate; // Permite separar as linhas
+  border-spacing: 0 0.5rem; // 0 de lado, 0.5rem entre as linhas (efeito flutuante)
+  
+  td {
+    padding: 1.25rem 2rem;
+    background: $gray-800; // Fundo de cada linha
+    color: $gray-300;
+
+    // Arredonda a primeira borda esquerda
+    &:first-child {
+      border-top-left-radius: 6px;
+      border-bottom-left-radius: 6px;
+      color: $gray-100; // Título fica mais claro
+    }
+
+    // Arredonda a última borda direita
+    &:last-child {
+      border-top-right-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+  }
+
+  // Cores dos Preços
+  .price {
+    font-weight: bold;
+
+    &.highlight-green {
+      color: $green-500;
+    }
+
+    &.highlight-red {
+      color: $red-500;
+    }
+  }
+
+  // Botões de Ação (Editar/Excluir)
+  .actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end; // Alinha ícones à direita
+      
+      button {
+          background: transparent;
+          border: 0;
+          padding: 0;
+          color: $gray-100; // Cinza escuro discreto
+          transition: color 0.2s;
+
+          &:hover {
+             color: $red-500; // Fica vermelho ao passar o mouse
+          }
+      }
+  }
+}
+
+// Responsividade: Tabela com scroll horizontal no celular
+@media (max-width: 768px) {
+    .transactions-container {
+        overflow-x: auto;
+    }
+    
+    .transactions-table {
+        min-width: 600px; // Força uma largura mínima pro scroll aparecer
+    }
+}

@@ -1,0 +1,191 @@
+@import '../../index.scss';
+
+.react-modal-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.react-modal-content {
+    width: 100%;
+    max-width: 576px;
+    background: $gray-800;
+    padding: 3rem;
+    position: relative;
+    z-index: 1001;
+    border-radius: 6px;
+    max-height: 90dvh;
+    overflow-y: auto; 
+    
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: $gray-600; 
+        border-radius: 20px;
+    }
+}
+
+.react-modal-close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1.5rem;
+    border: 0;
+    background: transparent;
+    color: $gray-500; 
+    transition: filter 0.2s;
+
+    &:hover {
+        filter: brightness(0.8);
+    }
+}
+
+form {
+    h2 {
+        color: $gray-100;
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 0 1.5rem;
+        height: 4rem;
+        border-radius: 0.25rem;
+        border: 1px solid $gray-600; // Ajuste para 300 se preferir
+        background: $gray-900;
+        font-weight: 400;
+        font-size: 1rem;
+        color: $gray-300;
+
+        &::placeholder {
+            color: $gray-300; // Seu ajuste
+        }
+
+        & + input {
+            margin-top: 1rem;
+        }
+    }
+
+    // Botão Verde de Cadastrar
+    button[type="submit"] {
+        width: 100%;
+        padding: 0 1.5rem;
+        height: 4rem;
+        background: $green-500;
+        color: #fff;
+        border-radius: 0.25rem;
+        border: 0;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+        font-weight: 600;
+        transition: filter 0.2s;
+
+        &:hover {
+            filter: brightness(0.9);
+        }
+    }
+}
+
+// Estilo dos Botões de Tipo (Entrada/Saída)
+.transaction-type-container {
+    margin: 1rem 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+}
+
+.radio-box {
+    height: 4rem;
+    border: 1px solid $gray-600; // Ajuste se necessário
+    border-radius: 0.25rem;
+    background: transparent;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    
+    color: $gray-300;
+    transition: border-color 0.2s;
+
+    &:hover {
+        border-color: $gray-300; // Efeito hover sutil
+    }
+
+    // Quando estiver ativo (selecionado)
+    &.active-green {
+        background: rgba(0, 179, 126, 0.1); // Verde claro transparente
+        border-color: $green-500;
+        color: $green-500;
+        
+        svg {
+            color: $green-500;
+        }
+    }
+
+    &.active-red {
+        background: rgba(247, 90, 104, 0.1); // Vermelho claro transparente
+        border-color: $red-500; // Se não tiver red-500 use #f75a68
+        color: $red-500;
+        
+        svg {
+            color: $red-500;
+        }
+    }
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); // 3 colunas exatas
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.category-box {
+    height: 4rem;
+    border: 0; // Remove a borda padrão feia
+    background: $gray-700; // Cor de fundo escura (cinza mais claro que o modal)
+    color: $gray-300;
+    border-radius: 6px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+
+    // Garante que o texto e ícone fiquem centralizados e bonitos
+    font-size: 1rem;
+    
+    svg {
+        color: $gray-300; // Ícone cinza por padrão
+    }
+
+    &:hover {
+        background: $gray-600; // Fica um pouco mais claro ao passar o mouse
+    }
+
+    // Estado SELECIONADO (Verde)
+    &.selected {
+        background: rgba(0, 179, 126, 0.1); // Fundo verde bem clarinho/transparente
+        border: 1px solid $green-500; // Borda verde sólida
+        color: $green-500; // Texto verde
+        
+        svg {
+            color: $green-500; // Ícone verde
+        }
+    }
+}

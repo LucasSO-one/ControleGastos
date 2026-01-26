@@ -1,0 +1,45 @@
+@import '../../index.scss';
+
+// Garante que o container ocupe a altura toda para o botão fixar certo
+.dashboard-container {
+    min-height: 100vh;
+    position: relative; 
+    padding-bottom: 5rem; // Espaço pro botão não tapar o conteúdo final
+}
+
+.floating-button {
+    position: fixed;
+    bottom: 3rem;
+    right: 3rem;
+    
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    
+    background: $green-500;
+    color: #FFF;
+    border: 0;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+    transition: filter 0.2s;
+    z-index: 100; // Garante que fique acima de tudo
+
+    &:hover {
+        filter: brightness(0.9);
+    }
+}
+
+// Responsividade: No celular o botão fica menor e mais perto da borda
+@media (max-width: 768px) {
+    .floating-button {
+        bottom: 2rem;
+        right: 2rem;
+        width: 3rem;
+        height: 3rem;
+    }
+}
