@@ -10,11 +10,11 @@ import {
     ForkKnifeIcon,
     HeartIcon,
     HouseIcon,
-    BankIcon,           
+    BankIcon,
+    GraduationCapIcon,           
     BriefcaseIcon,      
     ArrowsLeftRightIcon,
-    TagIcon, // Ícone genérico caso falte algum
-    Bank
+    TagIcon,  // Ícone genérico caso falte algum
 } from '@phosphor-icons/react'; 
 
 import api from '../../services/api'; 
@@ -33,6 +33,8 @@ const DEFAULT_CATEGORIES = [
     {name: 'Salário', iconKey: 'Bank'},
     {name: 'Trabalho', iconKey: 'Briefcase'},
     {name: 'Transferência', iconKey: 'ArrowsLeftRight'},
+    {name: 'Educação', iconKey: 'GraduationCap'},
+    {name: 'Outros', iconKey: 'Tag'},
 ];
 
 // Mapa para ligar o nome (string) ao Ícone (Componente React)
@@ -46,9 +48,11 @@ const ICON_MAP = {
     Bank: BankIcon,
     Briefcase: BriefcaseIcon,
     ArrowsLeftRight: ArrowsLeftRightIcon,
+    GraduationCap: GraduationCapIcon,
+    Tag: TagIcon,
 };
 
-export function NewTransactionModal({ isOpen, onRequestClose }) {
+export function NewTransactionModal({ isOpen, onRequestClose, transactionToEdit }) {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]); 
@@ -67,30 +71,62 @@ export function NewTransactionModal({ isOpen, onRequestClose }) {
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        if (transactionToEdit && dbCategories.length > 0) {
+            // Preenche os campos
+            setDescription(transactionToEdit.description);
+            setAmount(transactionToEdit.amount);
+            // Formata a data para o input (YYYY-MM-DD)
+            setDate(new Date(transactionToEdit.date).toISOString().split('T')[0]);
+            setType(transactionToEdit.type === 1 ? 'income' : 'outcome');
+
+            // Tenta encontrar o ID da categoria pelo nome (já que a tabela costuma mostrar o nome)
+            // Se o seu objeto transactionToEdit vier com 'categoryId', melhor ainda.
+            const foundCategory = dbCategories.find(
+                cat => cat.name === transactionToEdit.category || cat.id === transactionToEdit.categoryId
+            );
+            
+            if (foundCategory) {
+                setSelectedCategoryId(foundCategory.id);
+            }
+        } else if (!transactionToEdit) {
+            // Se não for edição, limpa tudo (Modo Criação)
+            cleanFields();
+        }
+    }, [transactionToEdit, isOpen, dbCategories]);
+
+    function cleanFields() {
+        setDescription('');
+        setAmount('');
+        setSelectedCategoryId(null);
+        setType('outcome');
+        setDate(new Date().toISOString().split('T')[0]);
+    }
+
     async function fetchAndEnsureCategories() {
         setIsLoadingCategories(true);
         try {
-            // A. Tenta buscar as categorias existentes
             const response = await api.get('/categories');
             let categoriesFromApi = response.data;
 
-            // B. Se a lista estiver vazia, cria as padrões automaticamente
-            if (categoriesFromApi.length === 0) {
-                
-                // Cria todas em paralelo
-                await Promise.all(DEFAULT_CATEGORIES.map(async (cat) => {
+            const existingNames = categoriesFromApi.map(cat => cat.name);
+
+            const missingCategories = DEFAULT_CATEGORIES.filter(
+                defCat => !existingNames.includes(defCat.name)
+            );
+
+            if (missingCategories.length > 0) {
+                await Promise.all(missingCategories.map(async (cat) => {
                     await api.post('/categories', {
                         name: cat.name,
-                        icon: cat.iconKey // Manda o nome do ícone pro backend salvar
+                        icon: cat.iconKey
                     });
                 }));
 
-                // Busca de novo agora que foram criadas
                 const secondResponse = await api.get('/categories');
                 categoriesFromApi = secondResponse.data;
             }
 
-            // C. Salva no estado para usar na tela
             setDbCategories(categoriesFromApi);
 
         } catch (error) {
@@ -111,20 +147,22 @@ export function NewTransactionModal({ isOpen, onRequestClose }) {
         const data = {
             description,
             amount: Number(amount),
-            categoryId: selectedCategoryId, // Usa o ID real do banco
+            categoryId: selectedCategoryId, 
             type: type === 'income' ? 1 : 0,
             date: new Date(date), 
         };
 
         try {
-            await api.post('/transactions', data);
-            
-            setDescription('');
-            setAmount('');
-            setSelectedCategoryId(null);
-            setType('outcome');
-            setDate(new Date().toISOString().split('T')[0]);
-            
+            if (transactionToEdit) {
+                data.id = transactionToEdit.id; 
+                await api.put(`/transactions/${transactionToEdit.id}`, data);
+                alert("Transação atualizada!");
+            } else {
+                await api.post('/transactions', data);
+                alert("Transação criada!");
+            }
+
+            cleanFields();
             onRequestClose();
             window.location.reload(); 
 
@@ -153,7 +191,7 @@ export function NewTransactionModal({ isOpen, onRequestClose }) {
             </button>
 
             <form onSubmit={handleCreateNewTransaction}>
-                <h2>Nova Transação</h2>
+                <h2>{transactionToEdit ? 'Editar Transação' : 'Nova Transação'}</h2>
 
                 <div className="transaction-type-container">
                     <button
@@ -201,16 +239,15 @@ export function NewTransactionModal({ isOpen, onRequestClose }) {
                 <label>Categoria</label>
                 <div className="category-grid">
                     {isLoadingCategories ? (
-                        <p style={{color: '#fff'}}>Carregando categorias...</p>
+                        <p style={{color: '#fff'}}>Carregando...</p>
                     ) : (
                         dbCategories.map(cat => (
                             <button
-                                key={cat.id} // ID REAL DO BANCO
+                                key={cat.id} 
                                 type="button"
                                 className={`category-box ${selectedCategoryId === cat.id ? 'selected' : ''}`}
                                 onClick={() => setSelectedCategoryId(cat.id)}
                             >
-                                {/* O backend precisa retornar "icon" ou "name" para gente saber qual ícone usar */}
                                 {renderIcon(cat.icon || cat.name)} 
                                 <span>{cat.name}</span>
                             </button>
@@ -218,7 +255,9 @@ export function NewTransactionModal({ isOpen, onRequestClose }) {
                     )}
                 </div>
 
-                <button type="submit" className="submit-btn">Adicionar</button>
+                <button type="submit" className="submit-btn">
+                    {transactionToEdit ? 'Salvar Alterações' : 'Adicionar'}
+                </button>
             </form>
         </Modal>
     );

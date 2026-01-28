@@ -1,15 +1,26 @@
 import "./TransactionsTable.scss"
 import { PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react";
 import {priceFormatter, dateFormatter} from "../../utils/format";
-import { useState } from "react";
+import api from "../../services/api";
 
 
-export default function TransactionsTable({transactions}) {
-    const [transactionToEdit, setTransactionToEdit] = useState(null);
-    const [transactionToDelete, setTransactionToDelete] = useState(null);
+export default function TransactionsTable({transactions, onEdit}) {
 
-    async function handleEditTransaction(transactionId){
+    async function handleDeleteTransaction(transactionId){
+        const confirmDelete = window.confirm("Tem certeza que deseja excluir esta transação?");
         
+        if (!confirmDelete) {
+            return;
+        }
+
+        try{
+            // Lógica para editar a transação
+            await api.delete(`/transactions/${transactionId}`);
+            window.location.reload();
+        } catch(error){
+            console.error("Erro ao editar a transação:", error);
+            alert("Erro ao excluir transação.");
+        }
     }
 
   return (
@@ -33,8 +44,8 @@ export default function TransactionsTable({transactions}) {
                     <td>{transaction.category?.name}</td>
                     <td>{dateFormatter.format(new Date(transaction.date))}</td>
                     <td className="actions">
-                        <button title="Editar"><PencilSimpleIcon size={20} /></button>
-                        <button title="Excluir"><TrashIcon size={20} /></button>
+                        <button title="Editar" onClick={() => onEdit(transaction)}><PencilSimpleIcon size={20} /></button>
+                        <button title="Excluir" onClick={() => handleDeleteTransaction(transaction.id)}><TrashIcon size={20} /></button>
                     </td>
                 </tr>
                 ))}

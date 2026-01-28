@@ -13,6 +13,7 @@ import Header from '../../components/Header/Header';
 import Summary from '../../components/Summary/Summary';
 import TransactionsTable from '../../components/TransactionsTable/TransactionsTable';
 import DateSelect from '../../components/DateSelect/DateSelect';
+import ExpensesChart from "../../components/ExpensesChart/ExpensesChart";
 
 export default function Dashboard() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -20,15 +21,22 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
 
   const [isNewTransactionModalOpen, setIsNewTransactionModalOpen] = useState(false);
+  const [transactionToEdit, setTransactionToEdit] = useState(null);
 
   function handleOpenNewTransactionModal() {
+    setTransactionToEdit(null);
     setIsNewTransactionModalOpen(true);
   }
-
+  
+  function handleOpenEditTransactionModal(transaction){
+    setTransactionToEdit(transaction);
+    setIsNewTransactionModalOpen(true);
+  }
+  
   function handleCloseNewTransactionModal() {
     setIsNewTransactionModalOpen(false);
+    setTransactionToEdit(null);
   }
-
   useEffect(() => {
     async function fetchTransactions(){
       setIsLoading(true);
@@ -82,12 +90,18 @@ export default function Dashboard() {
         outcome={summary.outcome}
         total={summary.total}
         />
-        <TransactionsTable transactions={transactions} />
+        {transactions.length > 0 && (
+          <ExpensesChart transactions={transactions} />
+        )}
+
+        <TransactionsTable transactions={transactions} 
+        onEdit={handleOpenEditTransactionModal}
+        />
 
         <button 
         className="floating-button" 
         onClick={handleOpenNewTransactionModal}
-        title="Nova Transação"
+        //title="Nova Transação"
       >
         <PlusIcon size={24} weight="bold" />
       </button>
@@ -95,6 +109,7 @@ export default function Dashboard() {
       <NewTransactionModal 
         isOpen={isNewTransactionModalOpen}
         onRequestClose={handleCloseNewTransactionModal}
+        transactionToEdit={transactionToEdit}
       />
     </div>
   )
