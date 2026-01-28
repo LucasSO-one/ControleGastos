@@ -81,17 +81,21 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Habilitar CORS
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowReactApp",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowVercel", policy =>
+    {
+        // IMPORTANTE: Use a URL exata do seu print (sem a barra / no final)
+        policy.WithOrigins("https://controle-gastos-zeta.vercel.app")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 var app = builder.Build();
 
+
+
+
+app.UseCors("AllowVercel");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -99,10 +103,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
 
-app.UseCors("AllowAll");
 app.UseAuthentication(); 
 app.UseAuthorization();
 
