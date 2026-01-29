@@ -84,6 +84,21 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var dbContext = services.GetRequiredService<AppDbContext>();
+        dbContext.Database.Migrate(); // Aplica as migrações pendentes
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Um erro ocorreu ao migrar o banco de dados.");
+    }
+}
+
 app.UseCors("AllowAll");
 
 if (app.Environment.IsDevelopment())
