@@ -32,7 +32,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await api.post('https://controlegastos-bzf9.onrender.com/api/auth/login', { email, password });
 
       const { token, name } = response.data;
       

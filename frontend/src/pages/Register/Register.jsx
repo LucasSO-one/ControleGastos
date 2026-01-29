@@ -35,7 +35,7 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      await api.post('/auth/register', {
+      await api.post('https://controlegastos-bzf9.onrender.com/api/auth/register', {
         name,
         email,
         password
