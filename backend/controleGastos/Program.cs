@@ -44,11 +44,14 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<TokenService>();
 
-// Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+
+// Pega variáveis (Local ou Render)
 var secretKey = jwtSettings["SecretKey"] ?? Environment.GetEnvironmentVariable("JwtSettings__SecretKey");
 var issuer = jwtSettings["Issuer"] ?? Environment.GetEnvironmentVariable("JwtSettings__Issuer");    
 var audience = jwtSettings["Audience"] ?? Environment.GetEnvironmentVariable("JwtSettings__Audience"); 
+
+var key = Encoding.UTF8.GetBytes(secretKey!);
 
 builder.Services.AddAuthentication(options =>
 {
@@ -63,9 +66,10 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = issuer,
-        ValidAudience = audience,
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        
+        ValidIssuer = issuer,       // Usa a variável capturada acima
+        ValidAudience = audience,   // Usa a variável capturada acima
+        IssuerSigningKey = new SymmetricSecurityKey(key) // Usa a chave convertida
     };
 });
 
@@ -79,6 +83,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Migração Automática do Banco
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -89,12 +94,10 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        // Loga o erro se algo der errado na migração (aparecerá no Render)
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Erro ao criar tabelas no banco de dados.");
     }
 }
-// ------------------------------------------------
 
 app.UseCors("AllowAll");
 

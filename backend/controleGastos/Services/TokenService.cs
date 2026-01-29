@@ -14,6 +14,17 @@ public class TokenService
 
     public string GenerateToken(User User)
     {
+        var secretKey = _configuration["JwtSettings:SecretKey"] ?? Environment.GetEnvironmentVariable("JwtSettings__SecretKey");
+        var issuer = _configuration["JwtSettings:Issuer"] ?? Environment.GetEnvironmentVariable("JwtSettings__Issuer");
+        var audience = _configuration["JwtSettings:Audience"] ?? Environment.GetEnvironmentVariable("JwtSettings__Audience");
+        var expiresHours = _configuration["JwtSettings:ExpiresHours"] ?? Environment.GetEnvironmentVariable("JwtSettings__ExpiresHours");
+
+        // Validação de segurança básica para não quebrar se faltar algo
+        if (string.IsNullOrEmpty(secretKey) || string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience) || string.IsNullOrEmpty(expiresHours))
+        {
+            throw new Exception("Configurações do JWT (Secret, Issuer, Audience ou Expires) estão faltando nas variáveis de ambiente.");
+        }
+
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, User.Id.ToString()),
@@ -21,16 +32,14 @@ public class TokenService
             new Claim(ClaimTypes.Email, User.Email)
         };
 
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"]));
-
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: issuer,
-            audience: audience,
+            issuer: issuer,       
+            audience: audience,  
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(double.Parse(_configuration["JwtSettings:ExpiresHours"])),
+            expires: DateTime.UtcNow.AddHours(double.Parse(expiresHours)),
             signingCredentials: creds
         );
 
