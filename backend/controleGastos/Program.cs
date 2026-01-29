@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuração do Banco
 var connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") 
                        ?? builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -18,26 +19,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Controle de Gastos API", Version = "v1" });
-
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Insira o token JWT desta maneira: Bearer {seu token}",
+        Description = "Insira o token JWT: Bearer {seu token}",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
         Scheme = "Bearer"
     });
-
     c.AddSecurityRequirement(new OpenApiSecurityRequirement()
     {
         {
             new OpenApiSecurityScheme
             {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                },
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
                 Scheme = "oauth2",
                 Name = "Bearer",
                 In = ParameterLocation.Header,
@@ -49,6 +44,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<TokenService>();
 
+// Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? Environment.GetEnvironmentVariable("JwtSettings__SecretKey");
 var key = Encoding.UTF8.GetBytes(secretKey!);
@@ -76,9 +72,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin()
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
     });
 });
 
@@ -90,14 +84,16 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = services.GetRequiredService<AppDbContext>();
-        dbContext.Database.Migrate(); // Aplica as migrações pendentes
+        dbContext.Database.Migrate();
     }
     catch (Exception ex)
     {
+        // Loga o erro se algo der errado na migração (aparecerá no Render)
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "Um erro ocorreu ao migrar o banco de dados.");
+        logger.LogError(ex, "Erro ao criar tabelas no banco de dados.");
     }
 }
+// ------------------------------------------------
 
 app.UseCors("AllowAll");
 
@@ -108,10 +104,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
