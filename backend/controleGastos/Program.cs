@@ -47,7 +47,8 @@ builder.Services.AddScoped<TokenService>();
 // Configuração JWT
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings["SecretKey"] ?? Environment.GetEnvironmentVariable("JwtSettings__SecretKey");
-var key = Encoding.UTF8.GetBytes(secretKey!);
+var issuer = jwtSettings["Issuer"] ?? Environment.GetEnvironmentVariable("JwtSettings__Issuer");    
+var audience = jwtSettings["Audience"] ?? Environment.GetEnvironmentVariable("JwtSettings__Audience"); 
 
 builder.Services.AddAuthentication(options =>
 {
@@ -62,8 +63,8 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtSettings["Issuer"],
-        ValidAudience = jwtSettings["Audience"],
+        ValidIssuer = issuer,
+        ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(key)
     };
 });
