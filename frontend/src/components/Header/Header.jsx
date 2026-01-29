@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { SignOutIcon, GearIcon } from '@phosphor-icons/react';
+import { SignOutIcon } from '@phosphor-icons/react';
 import "./Header.scss";
 
 export default function Header() {
@@ -22,9 +22,6 @@ export default function Header() {
             </div>
 
         <div className="actions">
-            <button type='button' title='Configurações'>
-                <GearIcon size={24}/>
-            </button>
 
             <button type='button' onClick={handleLogout} title='Sair'>
                 <SignOutIcon size={24}/>
