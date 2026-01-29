@@ -84,7 +84,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowVercel", policy =>
     {
         // IMPORTANTE: Use a URL exata do seu print (sem a barra / no final)
-        policy.WithOrigins("https://controle-gastos-zeta.vercel.app")
+        policy.WithOrigins("https://controle-gastos-nine.vercel.app")
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
